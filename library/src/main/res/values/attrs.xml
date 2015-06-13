@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="SlidingLayer">
+        <attr name="offsetDistance" format="dimension" />
+        <attr name="stickTo" format="enum">
+            <enum name="bottom" value="1" />
+            <enum name="left" value="2" />
+        </attr>
+    </declare-styleable>
+
+</resources>
