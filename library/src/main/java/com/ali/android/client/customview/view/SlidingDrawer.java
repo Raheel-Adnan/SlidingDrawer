@@ -55,6 +55,7 @@ public class SlidingDrawer extends FrameLayout {
 
     private int _delta;
     private int _lastCoordinate;
+    private long _pressStartTime;
 
     /**
      * The size of the panel that sticks out when closed
@@ -73,8 +74,6 @@ public class SlidingDrawer extends FrameLayout {
     private PanelState mSlideState = DEFAULT_SLIDE_STATE;
 
     private OnInteractListener mOnInteractListener;
-
-    private long pressStartTime;
 
     public SlidingDrawer(Context context) {
         this(context, null);
@@ -217,7 +216,7 @@ public class SlidingDrawer extends FrameLayout {
                 }
 
                 _lastCoordinate = coordinate;
-                pressStartTime = System.currentTimeMillis();
+                _pressStartTime = System.currentTimeMillis();
 
                 break;
 
@@ -252,7 +251,7 @@ public class SlidingDrawer extends FrameLayout {
             case MotionEvent.ACTION_UP:
 
                 final int diff = coordinate - _lastCoordinate;
-                long pressDuration = System.currentTimeMillis() - pressStartTime;
+                final long pressDuration = System.currentTimeMillis() - _pressStartTime;
 
                 switch (mStickTo) {
                     case STICK_TO_BOTTOM:
