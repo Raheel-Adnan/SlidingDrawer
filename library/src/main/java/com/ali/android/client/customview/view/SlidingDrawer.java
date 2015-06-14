@@ -11,13 +11,18 @@ import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.ali.android.client.customview.BuildConfig;
 import com.ali.android.client.customview.R;
 
-import com.ali.android.client.customview.Constant;
+import static com.ali.android.client.customview.SlidingDrawerUtils.getRawDisplayHeight;
+import static com.ali.android.client.customview.SlidingDrawerUtils.isClicked;
 
 public class SlidingDrawer extends FrameLayout {
 
     private static final String TAG = "SlidingDrawer";
+
+    /* If in Debug/development mode */
+    public static final boolean DEBUG = BuildConfig.DEBUG;
 
     /**
      * Special value for the position of the layer. STICK_TO_BOTTOM means that the
@@ -68,6 +73,8 @@ public class SlidingDrawer extends FrameLayout {
     private PanelState mSlideState = DEFAULT_SLIDE_STATE;
 
     private OnInteractListener mOnInteractListener;
+
+    private long pressStartTime;
 
     public SlidingDrawer(Context context) {
         this(context, null);
@@ -156,7 +163,7 @@ public class SlidingDrawer extends FrameLayout {
                 //Verify that either difference is enough to be a drag
                 if (diff > mTouchSlop) {
                     //Start capturing events
-                    if (Constant.DEBUG) Log.d(TAG, "drag captured.");
+                    if (DEBUG) Log.d(TAG, "drag captured.");
                     return true;
                 }
                 break;
@@ -171,10 +178,12 @@ public class SlidingDrawer extends FrameLayout {
         final View parent = (View) getParent();
         int coordinate = 0;
         int distance = 0;
+        int tapCoordinate = 0;
 
         switch (mStickTo) {
             case STICK_TO_BOTTOM:
                 coordinate = (int) event.getRawY();
+                tapCoordinate = (int) event.getRawY();
 
                 distance = parent.getHeight() -
                         parent.getPaddingTop() -
@@ -183,6 +192,7 @@ public class SlidingDrawer extends FrameLayout {
                 break;
             case STICK_TO_LEFT:
                 coordinate = parent.getWidth() - (int) event.getRawX();
+                tapCoordinate = (int) event.getRawX();
 
                 distance = parent.getWidth() -
                         parent.getPaddingLeft() -
@@ -207,6 +217,7 @@ public class SlidingDrawer extends FrameLayout {
                 }
 
                 _lastCoordinate = coordinate;
+                pressStartTime = System.currentTimeMillis();
 
                 break;
 
@@ -243,24 +254,58 @@ public class SlidingDrawer extends FrameLayout {
                         getLayoutParams();
 
                 final int diff = coordinate - _lastCoordinate;
+                long pressDuration = System.currentTimeMillis() - pressStartTime;
 
                 switch (mStickTo) {
                     case STICK_TO_BOTTOM:
-                        if ((diff > 0 && diff > getHeight() / 2.5) ||
-                                (diff < 0 && mSlideState == PanelState.CLOSE)) {
-                            params.bottomMargin = mOffsetDistance - getHeight();
-                            params.topMargin = distance - (mOffsetDistance - getHeight());
-                            mSlideState = PanelState.CLOSE;
-                        } else if (Math.abs(diff) > getHeight() / 2.5 ||
-                                (diff > 0 && mSlideState == PanelState.OPEN)) {
-                            params.bottomMargin = 0;
-                            params.topMargin = distance;
-                            notifyActionStartedForState(PanelState.OPEN);
+                        if (isClicked(getContext(), diff, pressDuration)) {
+                            if (tapCoordinate > parent.getHeight() - mOffsetDistance &&
+                                    mSlideState == PanelState.CLOSE) {
+                                params.bottomMargin = 0;
+                                params.topMargin = distance;
+                                notifyActionStartedForState(PanelState.OPEN);
+                            } else if (Math.abs(getRawDisplayHeight(getContext()) -
+                                    tapCoordinate - getHeight()) < mOffsetDistance &&
+                                    mSlideState == PanelState.OPEN) {
+                                params.bottomMargin = mOffsetDistance - getHeight();
+                                params.topMargin = distance - (mOffsetDistance - getHeight());
+                                notifyActionStartedForState(PanelState.CLOSE);
+                            }
+                        } else if (diff > 0) {
+                            if (diff > getHeight() / 2.5) {
+                                params.bottomMargin = mOffsetDistance - getHeight();
+                                params.topMargin = distance - (mOffsetDistance - getHeight());
+                                notifyActionStartedForState(PanelState.CLOSE);
+                            } else if (mSlideState == PanelState.OPEN) {
+                                params.bottomMargin = 0;
+                                params.topMargin = distance;
+                            }
+                        } else {
+                            if (Math.abs(diff) > getHeight() / 2.5) {
+                                params.bottomMargin = 0;
+                                params.topMargin = distance;
+                                notifyActionStartedForState(PanelState.OPEN);
+                            } else if (mSlideState == PanelState.CLOSE) {
+                                params.bottomMargin = mOffsetDistance - getHeight();
+                                params.topMargin = distance - (mOffsetDistance - getHeight());
+                            }
                         }
                         break;
 
                     case STICK_TO_LEFT:
-                        if (diff > 0) {
+                        if (isClicked(getContext(), diff, pressDuration)) {
+                            if (tapCoordinate <= mOffsetDistance &&
+                                    mSlideState == PanelState.CLOSE) {
+                                params.leftMargin = 0;
+                                params.rightMargin = distance;
+                                notifyActionStartedForState(PanelState.OPEN);
+                            } else if (tapCoordinate > getWidth() - mOffsetDistance &&
+                                    mSlideState == PanelState.OPEN) {
+                                params.leftMargin = mOffsetDistance - getWidth();
+                                params.rightMargin = distance - (mOffsetDistance - getWidth());
+                                notifyActionStartedForState(PanelState.CLOSE);
+                            }
+                        } else if (diff > 0) {
                             if (diff > getWidth() / 2.5) {
                                 params.leftMargin = mOffsetDistance - getWidth();
                                 params.rightMargin = distance - (mOffsetDistance - getWidth());

@@ -29,13 +29,13 @@ public class SlidingDrawerActivity extends AppCompatActivity implements
 
     @Override
     public void onOpened() {
-        Log.d(TAG, "onOpened()");
+        if (SlidingDrawer.DEBUG) Log.d(TAG, "onOpened()");
         mSlidingImage.setImageResource(R.drawable.ic_arrow_up);
     }
 
     @Override
     public void onClosed() {
-        Log.d(TAG, "onClosed()");
+        if (SlidingDrawer.DEBUG) Log.d(TAG, "onClosed()");
         mSlidingImage.setImageResource(R.drawable.ic_arrow_down);
     }
 }
