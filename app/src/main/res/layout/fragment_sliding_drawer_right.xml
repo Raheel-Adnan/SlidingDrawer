@@ -9,10 +9,10 @@
         android:id="@+id/slidingDrawer"
         android:layout_width="800px"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:background="@color/seafoam"
         custom:offsetDistance="200px"
-        custom:stickTo="left">
+        custom:stickTo="right">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,10 +22,10 @@
                 android:id="@+id/slidingImage"
                 android:layout_width="@dimen/sliding_image_size"
                 android:layout_height="@dimen/sliding_image_size"
-                android:layout_alignParentRight="true"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="5dp"
-                android:rotation="90"
+                android:layout_marginLeft="5dp"
+                android:rotation="-90"
                 android:src="@drawable/ic_arrow_down" />
 
             <fragment

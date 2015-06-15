@@ -14,6 +14,7 @@ import com.android.client.customview.demo.R;
 import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_BOTTOM;
 import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_LEFT;
 import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_RIGHT;
+import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_TOP;
 
 public class SlidingDrawerFragment extends Fragment implements
         SlidingDrawer.OnInteractListener {
@@ -45,7 +46,10 @@ public class SlidingDrawerFragment extends Fragment implements
                 resource = R.layout.fragment_sliding_drawer_left;
                 break;
             case STICK_TO_RIGHT:
+                resource = R.layout.fragment_sliding_drawer_right;
                 break;
+            case STICK_TO_TOP:
+                resource = R.layout.fragment_sliding_drawer_top;
         }
         return inflater.inflate(resource, container, false);
     }

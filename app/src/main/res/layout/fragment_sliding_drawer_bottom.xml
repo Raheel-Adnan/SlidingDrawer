@@ -33,7 +33,7 @@
                 android:layout_width="@dimen/button_size"
                 android:layout_height="@dimen/button_size"
                 android:layout_centerInParent="true"
-                tools:layout="@layout/item" />
+                tools:layout="@layout/fragment_control" />
 
         </RelativeLayout>
 
