@@ -1,0 +1,42 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.android.client.customview.demo.controllers.SlidingDrawerFragment">
+
+    <com.ali.android.client.customview.view.SlidingDrawer
+        android:id="@+id/slidingDrawer"
+        android:layout_width="match_parent"
+        android:layout_height="800px"
+        android:layout_alignParentBottom="true"
+        android:background="@color/seafoam"
+        custom:offsetDistance="200px"
+        custom:stickTo="bottom">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/slidingImage"
+                android:layout_width="@dimen/sliding_image_size"
+                android:layout_height="@dimen/sliding_image_size"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_arrow_down" />
+
+            <fragment
+                android:id="@+id/controlFragment"
+                android:name="com.android.client.customview.demo.controllers.ControlFragment"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_centerInParent="true"
+                tools:layout="@layout/item" />
+
+        </RelativeLayout>
+
+    </com.ali.android.client.customview.view.SlidingDrawer>
+
+</RelativeLayout>

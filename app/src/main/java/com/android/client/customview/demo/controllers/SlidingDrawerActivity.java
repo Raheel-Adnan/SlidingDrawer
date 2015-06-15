@@ -1,19 +1,18 @@
 package com.android.client.customview.demo.controllers;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
 
-import com.ali.android.client.customview.view.SlidingDrawer;
 import com.android.client.customview.demo.R;
 
-public class SlidingDrawerActivity extends AppCompatActivity implements
-        SlidingDrawer.OnInteractListener {
+import static com.android.client.customview.demo.controllers.SlidingDrawerFragment.ARG_STICK_TO;
+
+public class SlidingDrawerActivity extends AppCompatActivity  {
 
     private static final String TAG = "SlidingDrawerActivity";
-
-    private ImageView mSlidingImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,21 +20,11 @@ public class SlidingDrawerActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sliding_drawer);
 
-        mSlidingImage = (ImageView) findViewById(R.id.slidingImage);
-
-        final SlidingDrawer mSlidingDrawer = (SlidingDrawer) findViewById(R.id.slidingDrawer);
-        mSlidingDrawer.setOnInteractListener(this);
-    }
-
-    @Override
-    public void onOpened() {
-        if (SlidingDrawer.DEBUG) Log.d(TAG, "onOpened()");
-        mSlidingImage.setImageResource(R.drawable.ic_arrow_up);
-    }
-
-    @Override
-    public void onClosed() {
-        if (SlidingDrawer.DEBUG) Log.d(TAG, "onClosed()");
-        mSlidingImage.setImageResource(R.drawable.ic_arrow_down);
+        if (savedInstanceState == null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            final int stickTo = getIntent().getIntExtra(ARG_STICK_TO, 0);
+            Fragment fragment = SlidingDrawerFragment.newInstance(stickTo);
+            fragmentManager.beginTransaction().replace(R.id.content_fragment, fragment).commit();
+        }
     }
 }

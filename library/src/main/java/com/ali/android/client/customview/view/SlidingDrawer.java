@@ -29,7 +29,7 @@ public class SlidingDrawer extends FrameLayout {
      * view will stay attached to the bottom part of the screen, and come from
      * there into the viewable area.
      */
-    private static final int STICK_TO_BOTTOM = 1;
+    public static final int STICK_TO_BOTTOM = 1;
 
 
     /**
@@ -37,7 +37,14 @@ public class SlidingDrawer extends FrameLayout {
      * view shall be attached to the left side of the screen, and come from
      * there into the viewable area.
      */
-    private static final int STICK_TO_LEFT = 2;
+    public static final int STICK_TO_LEFT = 2;
+
+    /**
+     * Special value for the position of the layer. STICK_TO_RIGHT means that the
+     * view shall be attached to the right side of the screen, and come from
+     * there into the viewable area.
+     */
+    public static final int STICK_TO_RIGHT = 3;
 
 
     /**
@@ -345,9 +352,9 @@ public class SlidingDrawer extends FrameLayout {
                         notifyActionFinished(PanelState.CLOSE);
                         break;
                 }
-                setLayoutParams(params);
                 break;
         }
+        setLayoutParams(params);
     }
 
     private void notifyActionFinished(PanelState state) {
