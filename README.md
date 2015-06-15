@@ -40,4 +40,7 @@ Due to simplicity and lightness, this container is currently based on a FrameLay
 - *`offsetDistance`* - a reference to the dimension of the desired size for the layer to offset in the screen in order for it to be directly swipable to open.
 - *`stickTo`* - an enum that determines to where the container should stick to. ‘left’ sticks the container to the left side of the screen. ‘right’ sticks the container to the right side of the screen, and so on with ‘top‘ and ‘bottom‘ states. Default is ‘bottom’.
 
+### Contributing
+Contributions are very welcome. If you found a bug in the library or wanted a feature and thought you can fix it yourself, fork + pull request and i will appreciate it!
+
 
