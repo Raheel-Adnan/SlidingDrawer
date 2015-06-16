@@ -59,7 +59,7 @@ public class SlidingDrawer extends FrameLayout {
      */
     private static final int DEFAULT_SLIDING_LAYER_OFFSET = 200;
 
-    private static final PanelState DEFAULT_SLIDE_STATE = PanelState.OPEN;
+    private static final PanelState DEFAULT_SLIDE_STATE = PanelState.CLOSE;
 
     /* Positions of the last motion event */
     private float mInitialCoordinate;
@@ -125,27 +125,33 @@ public class SlidingDrawer extends FrameLayout {
         super.onLayout(changed, l, t, r, b);
 
         if (init) {
-            final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
-                    getLayoutParams();
-
             final View parent = (View) getParent();
 
-            switch (mStickTo) {
-                case STICK_TO_BOTTOM:
-                    params.topMargin = parent.getHeight() - getHeight();
-                    break;
-                case STICK_TO_LEFT:
-                    params.rightMargin = parent.getWidth() - getWidth();
-                    break;
-                case STICK_TO_RIGHT:
-                    params.leftMargin = parent.getWidth() - getWidth();
-                    break;
-                case STICK_TO_TOP:
-                    params.bottomMargin = parent.getHeight() - getHeight();
-                    break;
-            }
+            post(new Runnable() {
 
-            setLayoutParams(params);
+                @Override
+                public void run() {
+                    int distance = 0;
+                    switch (mStickTo) {
+                        case STICK_TO_BOTTOM:
+                        case STICK_TO_TOP:
+                            distance = parent.getHeight() -
+                                    parent.getPaddingTop() -
+                                    parent.getPaddingBottom() -
+                                    getHeight();
+                            break;
+                        case STICK_TO_LEFT:
+                        case STICK_TO_RIGHT:
+                            distance = parent.getWidth() -
+                                    parent.getPaddingLeft() -
+                                    parent.getPaddingRight() -
+                                    getWidth();
+                            break;
+                    }
+
+                    notifyActionForState(mSlideState, distance, false);
+                }
+            });
 
             init = false;
         }
@@ -325,11 +331,11 @@ public class SlidingDrawer extends FrameLayout {
                         if (isClicked(getContext(), diff, pressDuration)) {
                             if (tapCoordinate > parent.getHeight() - mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance);
+                                notifyActionForState(PanelState.OPEN, distance, true);
                             } else if (Math.abs(getRawDisplayHeight(getContext()) -
                                     tapCoordinate - getHeight()) < mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance);
+                                notifyActionForState(PanelState.CLOSE, distance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.VERTICAL);
@@ -344,10 +350,10 @@ public class SlidingDrawer extends FrameLayout {
                             final int y = globalPos[1];
                             if (tapCoordinate - Math.abs(y) <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance);
+                                notifyActionForState(PanelState.OPEN, distance, true);
                             } else if (getHeight() - (tapCoordinate - Math.abs(y)) < mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance);
+                                notifyActionForState(PanelState.CLOSE, distance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.VERTICAL);
@@ -359,10 +365,10 @@ public class SlidingDrawer extends FrameLayout {
                         if (isClicked(getContext(), diff, pressDuration)) {
                             if (tapCoordinate <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance);
+                                notifyActionForState(PanelState.OPEN, distance, true);
                             } else if (tapCoordinate > getWidth() - mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance);
+                                notifyActionForState(PanelState.CLOSE, distance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.HORIZONTAL);
@@ -374,10 +380,10 @@ public class SlidingDrawer extends FrameLayout {
                         if (isClicked(getContext(), diff, pressDuration)) {
                             if (parent.getWidth() - tapCoordinate <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance);
+                                notifyActionForState(PanelState.OPEN, distance, true);
                             } else if (tapCoordinate > getWidth() - mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance);
+                                notifyActionForState(PanelState.CLOSE, distance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.HORIZONTAL);
@@ -406,20 +412,20 @@ public class SlidingDrawer extends FrameLayout {
 
         if (diff > 0) {
             if (diff > length / 2.5) {
-                notifyActionForState(PanelState.CLOSE, distance);
+                notifyActionForState(PanelState.CLOSE, distance, true);
             } else if (mSlideState == PanelState.OPEN) {
-                notifyActionForState(PanelState.OPEN, distance);
+                notifyActionForState(PanelState.OPEN, distance, false);
             }
         } else {
             if (Math.abs(diff) > length / 2.5) {
-                notifyActionForState(PanelState.OPEN, distance);
+                notifyActionForState(PanelState.OPEN, distance, true);
             } else if (mSlideState == PanelState.CLOSE) {
-                notifyActionForState(PanelState.CLOSE, distance);
+                notifyActionForState(PanelState.CLOSE, distance, false);
             }
         }
     }
 
-    private void notifyActionForState(PanelState state, int distance) {
+    private void notifyActionForState(PanelState state, int distance, boolean notify) {
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 getLayoutParams();
@@ -431,12 +437,10 @@ public class SlidingDrawer extends FrameLayout {
                     case OPEN:
                         params.bottomMargin = 0;
                         params.topMargin = distance;
-                        notifyActionFinished(PanelState.OPEN);
                         break;
                     case CLOSE:
                         params.bottomMargin = mOffsetDistance - getHeight();
                         params.topMargin = distance - (mOffsetDistance - getHeight());
-                        notifyActionFinished(PanelState.CLOSE);
                         break;
                 }
 
@@ -448,12 +452,10 @@ public class SlidingDrawer extends FrameLayout {
                     case OPEN:
                         params.leftMargin = 0;
                         params.rightMargin = distance;
-                        notifyActionFinished(PanelState.OPEN);
                         break;
                     case CLOSE:
                         params.leftMargin = mOffsetDistance - getWidth();
                         params.rightMargin = distance - (mOffsetDistance - getWidth());
-                        notifyActionFinished(PanelState.CLOSE);
                         break;
                 }
 
@@ -465,12 +467,10 @@ public class SlidingDrawer extends FrameLayout {
                     case OPEN:
                         params.rightMargin = 0;
                         params.leftMargin = distance;
-                        notifyActionFinished(PanelState.OPEN);
                         break;
                     case CLOSE:
                         params.rightMargin = mOffsetDistance - getWidth();
                         params.leftMargin = distance - (mOffsetDistance - getWidth());
-                        notifyActionFinished(PanelState.CLOSE);
                         break;
                 }
 
@@ -482,16 +482,17 @@ public class SlidingDrawer extends FrameLayout {
                     case OPEN:
                         params.topMargin = 0;
                         params.bottomMargin = distance;
-                        notifyActionFinished(PanelState.OPEN);
                         break;
                     case CLOSE:
                         params.topMargin = mOffsetDistance - getHeight();
                         params.bottomMargin = distance - (mOffsetDistance - getHeight());
-                        notifyActionFinished(PanelState.CLOSE);
                         break;
                 }
 
                 break;
+        }
+        if(notify) {
+            notifyActionFinished(state);
         }
         setLayoutParams(params);
     }

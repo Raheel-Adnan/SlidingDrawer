@@ -25,7 +25,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="5dp"
-                android:src="@drawable/ic_arrow_down" />
+                android:src="@drawable/ic_arrow_up" />
 
             <fragment
                 android:id="@+id/controlFragment"
