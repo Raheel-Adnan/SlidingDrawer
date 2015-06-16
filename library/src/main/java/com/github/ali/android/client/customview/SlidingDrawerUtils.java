@@ -1,4 +1,4 @@
-package com.ali.android.client.customview;
+package com.github.ali.android.client.customview;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

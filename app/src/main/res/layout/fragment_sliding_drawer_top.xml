@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.android.client.customview.demo.controllers.SlidingDrawerFragment">
 
-    <com.ali.android.client.customview.view.SlidingDrawer
+    <com.github.ali.android.client.customview.view.SlidingDrawer
         android:id="@+id/slidingDrawer"
         android:layout_width="match_parent"
         android:layout_height="800px"
@@ -38,6 +38,6 @@
 
         </RelativeLayout>
 
-    </com.ali.android.client.customview.view.SlidingDrawer>
+    </com.github.ali.android.client.customview.view.SlidingDrawer>
 
 </RelativeLayout>

@@ -8,10 +8,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_BOTTOM;
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_LEFT;
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_RIGHT;
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_TOP;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_BOTTOM;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_LEFT;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_RIGHT;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_TOP;
 import static com.android.client.customview.demo.controllers.SlidingDrawerFragment.ARG_STICK_TO;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {

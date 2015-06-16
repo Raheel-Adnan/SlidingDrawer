@@ -1,4 +1,4 @@
-package com.ali.android.client.customview.view;
+package com.github.ali.android.client.customview.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,11 +11,11 @@ import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.ali.android.client.customview.BuildConfig;
-import com.ali.android.client.customview.R;
+import com.github.ali.android.client.customview.BuildConfig;
+import com.github.ali.android.client.customview.R;
 
-import static com.ali.android.client.customview.SlidingDrawerUtils.getRawDisplayHeight;
-import static com.ali.android.client.customview.SlidingDrawerUtils.isClicked;
+import static com.github.ali.android.client.customview.SlidingDrawerUtils.getRawDisplayHeight;
+import static com.github.ali.android.client.customview.SlidingDrawerUtils.isClicked;
 
 public class SlidingDrawer extends FrameLayout {
 

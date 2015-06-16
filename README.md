@@ -12,7 +12,7 @@ Due to simplicity and lightness, this container is currently based on a FrameLay
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-  <com.ali.android.client.customview.view.SlidingDrawer
+  <com.github.ali.android.client.customview.view.SlidingDrawer
     android:id="@+id/slidingDrawer"
     android:layout_width="match_parent"
     android:layout_height="800px"

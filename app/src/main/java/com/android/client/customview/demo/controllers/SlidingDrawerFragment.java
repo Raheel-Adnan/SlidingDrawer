@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.ali.android.client.customview.view.SlidingDrawer;
+import com.github.ali.android.client.customview.view.SlidingDrawer;
 import com.android.client.customview.demo.R;
 
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_BOTTOM;
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_LEFT;
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_RIGHT;
-import static com.ali.android.client.customview.view.SlidingDrawer.STICK_TO_TOP;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_BOTTOM;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_LEFT;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_RIGHT;
+import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_TO_TOP;
 
 public class SlidingDrawerFragment extends Fragment implements
         SlidingDrawer.OnInteractListener {
