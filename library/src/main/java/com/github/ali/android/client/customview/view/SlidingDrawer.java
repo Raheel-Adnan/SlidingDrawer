@@ -81,6 +81,11 @@ public class SlidingDrawer extends FrameLayout {
      */
     private int mStickTo;
 
+    /**
+     * Value for the orientation of the layer in the screen
+     */
+    private scrollState mScrollOrientation;
+
     private boolean init;
 
     private enum PanelState {OPEN, CLOSE}
@@ -118,6 +123,16 @@ public class SlidingDrawer extends FrameLayout {
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
         init = true;
+
+        switch (mStickTo) {
+            case STICK_TO_TOP:
+            case STICK_TO_BOTTOM:
+                mScrollOrientation = scrollState.VERTICAL;
+                break;
+            case STICK_TO_LEFT:
+            case STICK_TO_RIGHT:
+                mScrollOrientation = scrollState.HORIZONTAL;
+        }
     }
 
     @Override
@@ -532,5 +547,44 @@ public class SlidingDrawer extends FrameLayout {
         void onOpened();
 
         void onClosed();
+    }
+
+    public boolean isOpened() {
+        return mSlideState == PanelState.OPEN;
+    }
+
+    public boolean isClosed() {
+        return mSlideState == PanelState.CLOSE;
+    }
+
+    @SuppressWarnings("unused")
+    public void openDrawer() {
+        notifyActionForState(PanelState.OPEN, getDistance(), !isOpened());
+    }
+
+    @SuppressWarnings("unused")
+    public void closeDrawer() {
+        notifyActionForState(PanelState.CLOSE, getDistance(), !isClosed());
+    }
+
+    private int getDistance() {
+        final View parent = (View) getParent();
+
+        int distance = 0;
+        switch (mScrollOrientation) {
+            case VERTICAL:
+                distance = parent.getHeight() -
+                        parent.getPaddingTop() -
+                        parent.getPaddingBottom() -
+                        getHeight();
+                break;
+            case HORIZONTAL:
+                distance = parent.getHeight() -
+                        parent.getPaddingTop() -
+                        parent.getPaddingBottom() -
+                        getHeight();
+                break;
+        }
+        return distance;
     }
 }

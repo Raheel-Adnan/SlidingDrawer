@@ -19,11 +19,12 @@ import static com.github.ali.android.client.customview.view.SlidingDrawer.STICK_
 public class SlidingDrawerFragment extends Fragment implements
         SlidingDrawer.OnInteractListener {
 
-    private static final String TAG = "SlidingDrawerFragment";
+    public static final String TAG = "SlidingDrawerFragment";
 
     public static final String ARG_STICK_TO = "stickTo";
 
     private ImageView mSlidingImage;
+    private SlidingDrawer mSlidingDrawer;
 
     public static SlidingDrawerFragment newInstance(int stickTo) {
         SlidingDrawerFragment fragment = new SlidingDrawerFragment();
@@ -61,7 +62,7 @@ public class SlidingDrawerFragment extends Fragment implements
 
         mSlidingImage = (ImageView) view.findViewById(R.id.slidingImage);
 
-        final SlidingDrawer mSlidingDrawer = (SlidingDrawer) view.findViewById(R.id.slidingDrawer);
+        mSlidingDrawer = (SlidingDrawer) view.findViewById(R.id.slidingDrawer);
         mSlidingDrawer.setOnInteractListener(this);
     }
 
@@ -75,6 +76,10 @@ public class SlidingDrawerFragment extends Fragment implements
     public void onClosed() {
         if (SlidingDrawer.DEBUG) Log.d(TAG, "onClosed()");
         mSlidingImage.setImageResource(R.drawable.ic_arrow_up);
+    }
+
+    public SlidingDrawer getSlidingDrawer() {
+        return mSlidingDrawer;
     }
 
 }

@@ -1,16 +1,17 @@
 package com.android.client.customview.demo.controllers;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.android.client.customview.demo.R;
+import com.github.ali.android.client.customview.view.SlidingDrawer;
 
 import static com.android.client.customview.demo.controllers.SlidingDrawerFragment.ARG_STICK_TO;
 
-public class SlidingDrawerActivity extends AppCompatActivity  {
+public class SlidingDrawerActivity extends AppCompatActivity {
 
     private static final String TAG = "SlidingDrawerActivity";
 
@@ -23,8 +24,30 @@ public class SlidingDrawerActivity extends AppCompatActivity  {
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             final int stickTo = getIntent().getIntExtra(ARG_STICK_TO, 0);
-            Fragment fragment = SlidingDrawerFragment.newInstance(stickTo);
-            fragmentManager.beginTransaction().replace(R.id.content_fragment, fragment).commit();
+            SlidingDrawerFragment fragment = SlidingDrawerFragment.newInstance(stickTo);
+            fragmentManager.beginTransaction().replace(
+                    R.id.content_fragment,
+                    fragment,
+                    SlidingDrawerFragment.TAG)
+                    .commit();
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_BACK:
+                final SlidingDrawerFragment fragment = (SlidingDrawerFragment)
+                        getSupportFragmentManager().
+                                findFragmentByTag(SlidingDrawerFragment.TAG);
+                final SlidingDrawer slidingDrawer = fragment.getSlidingDrawer();
+                if (slidingDrawer.isOpened()) {
+                    slidingDrawer.closeDrawer();
+                    return true;
+                }
+
+            default:
+                return super.onKeyDown(keyCode, event);
         }
     }
 }
