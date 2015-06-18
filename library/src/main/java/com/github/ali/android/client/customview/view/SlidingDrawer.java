@@ -1,5 +1,7 @@
 package com.github.ali.android.client.customview.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
@@ -8,6 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -58,6 +61,9 @@ public class SlidingDrawer extends FrameLayout {
      * The default size of the panel that sticks out when closed
      */
     private static final int DEFAULT_SLIDING_LAYER_OFFSET = 200;
+
+    /* Duration for certain animations we use */
+    private static final int TRANSLATION_ANIM_DURATION = 300;
 
     private static final PanelState DEFAULT_SLIDE_STATE = PanelState.CLOSE;
 
@@ -346,11 +352,11 @@ public class SlidingDrawer extends FrameLayout {
                         if (isClicked(getContext(), diff, pressDuration)) {
                             if (tapCoordinate > parent.getHeight() - mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance, true);
+                                notifyActionAndAnimateForState(PanelState.OPEN, getHeight() - mOffsetDistance, true);
                             } else if (Math.abs(getRawDisplayHeight(getContext()) -
                                     tapCoordinate - getHeight()) < mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance, true);
+                                notifyActionAndAnimateForState(PanelState.CLOSE, getHeight() - mOffsetDistance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.VERTICAL);
@@ -365,10 +371,10 @@ public class SlidingDrawer extends FrameLayout {
                             final int y = globalPos[1];
                             if (tapCoordinate - Math.abs(y) <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance, true);
+                                notifyActionAndAnimateForState(PanelState.OPEN, getHeight() - mOffsetDistance, true);
                             } else if (getHeight() - (tapCoordinate - Math.abs(y)) < mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance, true);
+                                notifyActionAndAnimateForState(PanelState.CLOSE, getHeight() - mOffsetDistance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.VERTICAL);
@@ -380,10 +386,10 @@ public class SlidingDrawer extends FrameLayout {
                         if (isClicked(getContext(), diff, pressDuration)) {
                             if (tapCoordinate <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance, true);
+                                notifyActionAndAnimateForState(PanelState.OPEN, getWidth() - mOffsetDistance, true);
                             } else if (tapCoordinate > getWidth() - mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance, true);
+                                notifyActionAndAnimateForState(PanelState.CLOSE, getWidth() - mOffsetDistance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.HORIZONTAL);
@@ -395,10 +401,10 @@ public class SlidingDrawer extends FrameLayout {
                         if (isClicked(getContext(), diff, pressDuration)) {
                             if (parent.getWidth() - tapCoordinate <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
-                                notifyActionForState(PanelState.OPEN, distance, true);
+                                notifyActionAndAnimateForState(PanelState.OPEN, getWidth() - mOffsetDistance, true);
                             } else if (tapCoordinate > getWidth() - mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
-                                notifyActionForState(PanelState.CLOSE, distance, true);
+                                notifyActionAndAnimateForState(PanelState.CLOSE, getWidth() - mOffsetDistance, true);
                             }
                         } else {
                             smoothScrollToAndNotify(diff, distance, scrollState.HORIZONTAL);
@@ -440,7 +446,145 @@ public class SlidingDrawer extends FrameLayout {
         }
     }
 
-    private void notifyActionForState(PanelState state, int distance, boolean notify) {
+    private void notifyActionAndAnimateForState(final PanelState stateToApply,
+                                                final int translation, final boolean notify) {
+        switch (mStickTo) {
+            case STICK_TO_BOTTOM:
+                switch (stateToApply) {
+                    case OPEN:
+                        animate()
+                                .translationY(-translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationY(0);
+                                    }
+                                });
+
+                        break;
+                    case CLOSE:
+                        animate()
+                                .translationY(translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationY(0);
+                                    }
+                                });
+                        break;
+                }
+                break;
+
+            case STICK_TO_TOP:
+                switch (stateToApply) {
+                    case OPEN:
+                        animate()
+                                .translationY(translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationY(0);
+                                    }
+                                });
+                        break;
+                    case CLOSE:
+                        animate()
+                                .translationY(-translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationY(0);
+                                    }
+                                });
+                        break;
+                }
+                break;
+
+            case STICK_TO_LEFT:
+                switch (stateToApply) {
+                    case OPEN:
+                        animate()
+                                .translationX(translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationX(0);
+                                    }
+                                });
+                        break;
+                    case CLOSE:
+                        animate()
+                                .translationX(-translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationX(0);
+                                    }
+                                });
+                        break;
+                }
+                break;
+
+            case STICK_TO_RIGHT:
+                switch (stateToApply) {
+                    case OPEN:
+                        animate()
+                                .translationX(-translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationX(0);
+                                    }
+                                });
+                        break;
+                    case CLOSE:
+                        animate()
+                                .translationX(translation)
+                                .setDuration(TRANSLATION_ANIM_DURATION)
+                                .setInterpolator(new DecelerateInterpolator())
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        setTranslationX(0);
+                                    }
+                                });
+                        break;
+                }
+                break;
+        }
+    }
+
+    private void notifyActionForState(PanelState stateToApply, int distance, boolean notify) {
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 getLayoutParams();
@@ -448,7 +592,7 @@ public class SlidingDrawer extends FrameLayout {
         switch (mStickTo) {
             case STICK_TO_BOTTOM:
 
-                switch (state) {
+                switch (stateToApply) {
                     case OPEN:
                         params.bottomMargin = 0;
                         params.topMargin = distance;
@@ -463,7 +607,7 @@ public class SlidingDrawer extends FrameLayout {
 
             case STICK_TO_LEFT:
 
-                switch (state) {
+                switch (stateToApply) {
                     case OPEN:
                         params.leftMargin = 0;
                         params.rightMargin = distance;
@@ -478,7 +622,7 @@ public class SlidingDrawer extends FrameLayout {
 
             case STICK_TO_RIGHT:
 
-                switch (state) {
+                switch (stateToApply) {
                     case OPEN:
                         params.rightMargin = 0;
                         params.leftMargin = distance;
@@ -493,7 +637,7 @@ public class SlidingDrawer extends FrameLayout {
 
             case STICK_TO_TOP:
 
-                switch (state) {
+                switch (stateToApply) {
                     case OPEN:
                         params.topMargin = 0;
                         params.bottomMargin = distance;
@@ -506,8 +650,8 @@ public class SlidingDrawer extends FrameLayout {
 
                 break;
         }
-        if(notify) {
-            notifyActionFinished(state);
+        if (notify) {
+            notifyActionFinished(stateToApply);
         }
         setLayoutParams(params);
     }
