@@ -210,47 +210,33 @@ public class SlidingDrawer extends FrameLayout {
     public boolean onTouchEvent(@NonNull MotionEvent event) {
 
         final View parent = (View) getParent();
-        int coordinate = 0;
-        int distance = 0;
-        int tapCoordinate = 0;
+        final int coordinate;
+        final int distance = getDistance();
+        final int tapCoordinate;
 
         switch (mStickTo) {
             case STICK_TO_BOTTOM:
                 coordinate = (int) event.getRawY();
                 tapCoordinate = (int) event.getRawY();
-
-                distance = parent.getHeight() -
-                        parent.getPaddingTop() -
-                        parent.getPaddingBottom() -
-                        getHeight();
                 break;
+
             case STICK_TO_LEFT:
                 coordinate = parent.getWidth() - (int) event.getRawX();
                 tapCoordinate = (int) event.getRawX();
-
-                distance = parent.getWidth() -
-                        parent.getPaddingLeft() -
-                        parent.getPaddingRight() -
-                        getWidth();
                 break;
+
             case STICK_TO_RIGHT:
                 coordinate = (int) event.getRawX();
                 tapCoordinate = (int) event.getRawX();
-
-                distance = parent.getWidth() -
-                        parent.getPaddingLeft() -
-                        parent.getPaddingRight() -
-                        getWidth();
                 break;
+
             case STICK_TO_TOP:
                 coordinate = getRawDisplayHeight(getContext()) - (int) event.getRawY();
                 tapCoordinate = (int) event.getRawY();
-
-                distance = parent.getHeight() -
-                        parent.getPaddingTop() -
-                        parent.getPaddingBottom() -
-                        getHeight();
                 break;
+
+            default:
+                throw new IllegalStateException("Failed to initialize coordinates.");
         }
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
@@ -405,22 +391,18 @@ public class SlidingDrawer extends FrameLayout {
         if (diff > 0) {
             if (diff > length / 2.5) {
                 stateToApply = PanelState.CLOSE;
-//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
-                notifyActionForState(stateToApply, true);
+                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
             } else if (mSlideState == PanelState.OPEN) {
                 stateToApply = PanelState.OPEN;
-//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
-                notifyActionForState(stateToApply, false);
+                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
             }
         } else {
             if (Math.abs(diff) > length / 2.5) {
                 stateToApply = PanelState.OPEN;
-//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
-                notifyActionForState(stateToApply, true);
+                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
             } else if (mSlideState == PanelState.CLOSE) {
                 stateToApply = PanelState.CLOSE;
-//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
-                notifyActionForState(stateToApply, false);
+                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
             }
         }
     }
@@ -475,7 +457,7 @@ public class SlidingDrawer extends FrameLayout {
                 }
                 break;
         }
-        throw new IllegalStateException("Failed to return translation for the drawer.");
+        throw new IllegalStateException("Failed to return translation for drawer.");
     }
 
     private void notifyActionAndAnimateForState(final PanelState stateToApply,
@@ -754,10 +736,10 @@ public class SlidingDrawer extends FrameLayout {
                         parent.getPaddingBottom() -
                         getHeight();
             case HORIZONTAL:
-                return parent.getHeight() -
-                        parent.getPaddingTop() -
-                        parent.getPaddingBottom() -
-                        getHeight();
+                return parent.getWidth() -
+                        parent.getPaddingLeft() -
+                        parent.getPaddingRight() -
+                        getWidth();
         }
         throw new IllegalStateException("Scroll orientation is not initialized.");
     }

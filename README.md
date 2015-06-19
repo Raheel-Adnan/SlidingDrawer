@@ -29,7 +29,7 @@ Due to simplicity and lightness, this container is currently based on a FrameLay
     android:layout_width="match_parent"
     android:layout_height="800px"
     android:layout_alignParentTop | alignParentBottom | alignParentRight | alignParentLeft = "true" 
-    android:background="@color/seafoam"
+    android:background="@color/drawer_background"
     custom:offsetDistance="200px"
     custom:stickTo="top|bottom|right|left" >
     
