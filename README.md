@@ -1,6 +1,18 @@
 # SlidingDrawer for Android
 Draggable sliding drawer provides an easy way to slide from any side of your screen.
 
+## Download
+Simply add the following dependency to your *`build.gradle`* file to use the latest version:
+
+```groovy
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+    compile 'com.github.ali-rezaei.android.client.customview:sliding-drawer:0.1.0'
+}
+```
+
 ## Integration
 Due to simplicity and lightness, this container is currently based on a FrameLayout. Place it in a **_RelativeLayout_** of your XML layout file.
 
@@ -33,7 +45,7 @@ Due to simplicity and lightness, this container is currently based on a FrameLay
         android:layout_centerInParent="true" />
 
     </RelativeLayout>
-  </com.ali.android.client.customview.view.SlidingDrawer>
+  </com.github.ali.android.client.customview.view.SlidingDrawer>
 ```
 
 ### Properties
