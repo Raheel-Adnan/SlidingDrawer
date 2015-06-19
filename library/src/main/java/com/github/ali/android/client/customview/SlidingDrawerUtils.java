@@ -2,6 +2,7 @@ package com.github.ali.android.client.customview;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.View;
 
 public class SlidingDrawerUtils {
 
@@ -18,6 +19,23 @@ public class SlidingDrawerUtils {
     public static int getRawDisplayHeight(Context context) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         return metrics.heightPixels;
+    }
+
+    public static int getRawDisplayWidth(Context context) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return metrics.widthPixels;
+    }
+
+    public static int getLocationInYAxis(View v) {
+        final int[] globalPos = new int[2];
+        v.getLocationInWindow(globalPos);
+        return globalPos[1];
+    }
+
+    public static int getLocationInXAxis(View v) {
+        final int[] globalPos = new int[2];
+        v.getLocationInWindow(globalPos);
+        return globalPos[0];
     }
 
     public static boolean isClicked(Context context, float diff, long pressDuration) {

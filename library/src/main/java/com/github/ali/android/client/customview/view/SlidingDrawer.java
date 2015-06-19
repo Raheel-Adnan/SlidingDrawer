@@ -17,7 +17,10 @@ import android.widget.RelativeLayout;
 import com.github.ali.android.client.customview.BuildConfig;
 import com.github.ali.android.client.customview.R;
 
+import static com.github.ali.android.client.customview.SlidingDrawerUtils.getLocationInXAxis;
+import static com.github.ali.android.client.customview.SlidingDrawerUtils.getLocationInYAxis;
 import static com.github.ali.android.client.customview.SlidingDrawerUtils.getRawDisplayHeight;
+import static com.github.ali.android.client.customview.SlidingDrawerUtils.getRawDisplayWidth;
 import static com.github.ali.android.client.customview.SlidingDrawerUtils.isClicked;
 
 public class SlidingDrawer extends FrameLayout {
@@ -146,31 +149,10 @@ public class SlidingDrawer extends FrameLayout {
         super.onLayout(changed, l, t, r, b);
 
         if (init) {
-            final View parent = (View) getParent();
-
             post(new Runnable() {
-
                 @Override
                 public void run() {
-                    int distance = 0;
-                    switch (mStickTo) {
-                        case STICK_TO_BOTTOM:
-                        case STICK_TO_TOP:
-                            distance = parent.getHeight() -
-                                    parent.getPaddingTop() -
-                                    parent.getPaddingBottom() -
-                                    getHeight();
-                            break;
-                        case STICK_TO_LEFT:
-                        case STICK_TO_RIGHT:
-                            distance = parent.getWidth() -
-                                    parent.getPaddingLeft() -
-                                    parent.getPaddingRight() -
-                                    getWidth();
-                            break;
-                    }
-
-                    notifyActionForState(mSlideState, distance, false);
+                    notifyActionForState(mSlideState, false);
                 }
             });
 
@@ -359,16 +341,14 @@ public class SlidingDrawer extends FrameLayout {
                                 notifyActionAndAnimateForState(PanelState.CLOSE, getHeight() - mOffsetDistance, true);
                             }
                         } else {
-                            smoothScrollToAndNotify(diff, distance, scrollState.VERTICAL);
+                            smoothScrollToAndNotify(diff);
                         }
 
                         break;
 
                     case STICK_TO_TOP:
                         if (isClicked(getContext(), diff, pressDuration)) {
-                            final int[] globalPos = new int[2];
-                            getLocationInWindow(globalPos);
-                            final int y = globalPos[1];
+                            final int y = getLocationInYAxis(this);
                             if (tapCoordinate - Math.abs(y) <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
                                 notifyActionAndAnimateForState(PanelState.OPEN, getHeight() - mOffsetDistance, true);
@@ -377,7 +357,7 @@ public class SlidingDrawer extends FrameLayout {
                                 notifyActionAndAnimateForState(PanelState.CLOSE, getHeight() - mOffsetDistance, true);
                             }
                         } else {
-                            smoothScrollToAndNotify(diff, distance, scrollState.VERTICAL);
+                            smoothScrollToAndNotify(diff);
                         }
 
                         break;
@@ -392,7 +372,7 @@ public class SlidingDrawer extends FrameLayout {
                                 notifyActionAndAnimateForState(PanelState.CLOSE, getWidth() - mOffsetDistance, true);
                             }
                         } else {
-                            smoothScrollToAndNotify(diff, distance, scrollState.HORIZONTAL);
+                            smoothScrollToAndNotify(diff);
                         }
 
                         break;
@@ -407,7 +387,7 @@ public class SlidingDrawer extends FrameLayout {
                                 notifyActionAndAnimateForState(PanelState.CLOSE, getWidth() - mOffsetDistance, true);
                             }
                         } else {
-                            smoothScrollToAndNotify(diff, distance, scrollState.HORIZONTAL);
+                            smoothScrollToAndNotify(diff);
                         }
 
                         break;
@@ -417,33 +397,85 @@ public class SlidingDrawer extends FrameLayout {
         return true;
     }
 
-    private void smoothScrollToAndNotify(int diff, int distance, scrollState state) {
+    private void smoothScrollToAndNotify(int diff) {
 
-        int length = 0;
+        int length = getLength();
 
-        switch (state) {
-            case VERTICAL:
-                length = getHeight();
-                break;
-
-            case HORIZONTAL:
-                length = getWidth();
-                break;
-        }
-
+        PanelState stateToApply;
         if (diff > 0) {
             if (diff > length / 2.5) {
-                notifyActionForState(PanelState.CLOSE, distance, true);
+                stateToApply = PanelState.CLOSE;
+//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
+                notifyActionForState(stateToApply, true);
             } else if (mSlideState == PanelState.OPEN) {
-                notifyActionForState(PanelState.OPEN, distance, false);
+                stateToApply = PanelState.OPEN;
+//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
+                notifyActionForState(stateToApply, false);
             }
         } else {
             if (Math.abs(diff) > length / 2.5) {
-                notifyActionForState(PanelState.OPEN, distance, true);
+                stateToApply = PanelState.OPEN;
+//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
+                notifyActionForState(stateToApply, true);
             } else if (mSlideState == PanelState.CLOSE) {
-                notifyActionForState(PanelState.CLOSE, distance, false);
+                stateToApply = PanelState.CLOSE;
+//                notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
+                notifyActionForState(stateToApply, false);
             }
         }
+    }
+
+    private int getTranslationFor(PanelState stateToApply) {
+        switch (mStickTo) {
+
+            case STICK_TO_BOTTOM:
+
+                switch (stateToApply) {
+                    case OPEN:
+                        return getHeight() - (getRawDisplayHeight(getContext()) - getLocationInYAxis(this));
+
+                    case CLOSE:
+                        return getRawDisplayHeight(getContext()) - getLocationInYAxis(this) - mOffsetDistance;
+                }
+                break;
+
+            case STICK_TO_TOP:
+
+                final int actionBarDiff = getRawDisplayHeight(getContext()) - ((View) getParent()).getHeight();
+                final int y = getLocationInYAxis(this) + getHeight();
+
+                switch (stateToApply) {
+                    case OPEN:
+                        return getHeight() - y + actionBarDiff;
+
+                    case CLOSE:
+                        return y - mOffsetDistance - actionBarDiff;
+                }
+                break;
+
+            case STICK_TO_LEFT:
+
+                final int x = getLocationInXAxis(this) + getWidth();
+
+                switch (stateToApply) {
+                    case OPEN:
+                        return getWidth() - x;
+                    case CLOSE:
+                        return x - mOffsetDistance;
+                }
+                break;
+
+            case STICK_TO_RIGHT:
+
+                switch (stateToApply) {
+                    case OPEN:
+                        return getWidth() - (getRawDisplayWidth(getContext()) - getLocationInXAxis(this));
+                    case CLOSE:
+                        return getRawDisplayWidth(getContext()) - getLocationInXAxis(this) - mOffsetDistance;
+                }
+                break;
+        }
+        throw new IllegalStateException("Failed to return translation for the drawer.");
     }
 
     private void notifyActionAndAnimateForState(final PanelState stateToApply,
@@ -460,7 +492,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationY(0);
                                     }
                                 });
@@ -475,7 +507,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationY(0);
                                     }
                                 });
@@ -494,7 +526,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationY(0);
                                     }
                                 });
@@ -508,7 +540,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationY(0);
                                     }
                                 });
@@ -527,7 +559,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationX(0);
                                     }
                                 });
@@ -541,7 +573,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationX(0);
                                     }
                                 });
@@ -560,7 +592,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationX(0);
                                     }
                                 });
@@ -574,7 +606,7 @@ public class SlidingDrawer extends FrameLayout {
                                     @Override
                                     public void onAnimationEnd(Animator animation) {
                                         super.onAnimationEnd(animation);
-                                        notifyActionForState(stateToApply, getDistance(), notify);
+                                        notifyActionForState(stateToApply, notify);
                                         setTranslationX(0);
                                     }
                                 });
@@ -584,8 +616,9 @@ public class SlidingDrawer extends FrameLayout {
         }
     }
 
-    private void notifyActionForState(PanelState stateToApply, int distance, boolean notify) {
+    private void notifyActionForState(PanelState stateToApply, boolean notify) {
 
+        final int distance = getDistance();
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)
                 getLayoutParams();
 
@@ -703,32 +736,39 @@ public class SlidingDrawer extends FrameLayout {
 
     @SuppressWarnings("unused")
     public void openDrawer() {
-        notifyActionForState(PanelState.OPEN, getDistance(), !isOpened());
+        notifyActionAndAnimateForState(PanelState.OPEN, getLength() - mOffsetDistance, !isOpened());
     }
 
     @SuppressWarnings("unused")
     public void closeDrawer() {
-        notifyActionForState(PanelState.CLOSE, getDistance(), !isClosed());
+        notifyActionAndAnimateForState(PanelState.CLOSE, getLength() - mOffsetDistance, !isClosed());
     }
 
     private int getDistance() {
         final View parent = (View) getParent();
 
-        int distance = 0;
         switch (mScrollOrientation) {
             case VERTICAL:
-                distance = parent.getHeight() -
+                return parent.getHeight() -
                         parent.getPaddingTop() -
                         parent.getPaddingBottom() -
                         getHeight();
-                break;
             case HORIZONTAL:
-                distance = parent.getHeight() -
+                return parent.getHeight() -
                         parent.getPaddingTop() -
                         parent.getPaddingBottom() -
                         getHeight();
-                break;
         }
-        return distance;
+        throw new IllegalStateException("Scroll orientation is not initialized.");
+    }
+
+    private int getLength() {
+        switch (mScrollOrientation) {
+            case VERTICAL:
+                return getHeight();
+            case HORIZONTAL:
+                return getWidth();
+        }
+        throw new IllegalStateException("Scroll orientation is not initialized.");
     }
 }
