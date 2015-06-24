@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 android {
     compileSdkVersion 22
@@ -21,4 +23,61 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.2.0'
+}
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+signing {
+    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: sonatypeRepo) {
+            authentication(userName: sonatypeUsername,
+                    password: sonatypePassword)
+        }
+
+        pom.version = "0.1.0"
+        pom.artifactId = "sliding-drawer"
+        pom.groupId = "com.github.ali-rezaei.android.client.customview"
+
+        pom.project {
+            name 'Sliding Drawer'
+            packaging 'aar'
+            description 'Android draggable sliding drawer provides an easy way ' +
+                    'to slide from any side of your screen'
+            url 'https://github.com/Ali-Rezaei/SlidingDrawer'
+
+            scm {
+                url 'scm:https://github.com/Ali-Rezaei/SlidingDrawer.git'
+                connection 'scm:https://github.com/Ali-Rezaei/SlidingDrawer.git'
+                developerConnection 'scm:https://github.com/Ali-Rezaei/SlidingDrawer.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'ali'
+                    name 'Ali Rezaei'
+                    email 'ali.rezaei09@gmail.com'
+                }
+            }
+        }
+    }
 }
