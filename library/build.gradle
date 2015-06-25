@@ -2,9 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-// This is the library version used when deploying the artifact
-version = "0.1.0"
-
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -31,36 +28,37 @@ dependencies {
 def siteUrl = 'https://github.com/Ali-Rezaei/SlidingDrawer'      // Homepage URL of the library
 def gitUrl = 'https://github.com/Ali-Rezaei/SlidingDrawer.git'   // Git repository URL
 group = "com.github.ali-rezaei.android.client.customview"        // Maven Group ID for the artifact
+version = "0.1.0"       // This is the library version used when deploying the artifact
 
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
-            project {
-                packaging 'aar'
 
-                // Add your description here
-                name 'sliding-drawer'
-                url siteUrl
+            project {
+                name POM_NAME
+                packaging POM_PACKAGING
+                description POM_DESCRIPTION
+                url POM_URL
 
                 // Set your license
                 licenses {
                     license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name POM_LICENCE_NAME
+                        url POM_LICENCE_URL
+                        distribution POM_LICENCE_DIST
                     }
                 }
                 developers {
                     developer {
-                        id 'ali'
-                        name 'Ali Rezaei'
-                        email 'ali.rezaei09@gmail.com'
+                        id POM_DEVELOPER_ID
+                        name POM_DEVELOPER_NAME
                     }
                 }
                 scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
+                    url POM_SCM_URL
+                    connection POM_SCM_CONNECTION
+                    developerConnection POM_SCM_DEV_CONNECTION
 
                 }
             }
@@ -78,7 +76,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "sliding-drawer"
+        name = POM_NAME
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
