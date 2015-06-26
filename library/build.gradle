@@ -28,7 +28,7 @@ dependencies {
 def siteUrl = 'https://github.com/Ali-Rezaei/SlidingDrawer'      // Homepage URL of the library
 def gitUrl = 'https://github.com/Ali-Rezaei/SlidingDrawer.git'   // Git repository URL
 group = "com.github.ali-rezaei.android.client.customview"        // Maven Group ID for the artifact
-version = "0.1.0"       // This is the library version used when deploying the artifact
+version = "0.1.1"       // This is the library version used when deploying the artifact
 
 install {
     repositories.mavenInstaller {
@@ -76,7 +76,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = POM_NAME
+        name = "sliding-drawer"
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]

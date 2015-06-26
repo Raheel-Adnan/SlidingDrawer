@@ -1,1 +1,3 @@
 include ':app', ':library'
+
+project(':library').setName('sliding-drawer')
