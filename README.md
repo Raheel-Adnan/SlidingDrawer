@@ -9,7 +9,7 @@ dependencies {
     repositories {
         mavenCentral()
     }
-    compile 'com.github.ali-rezaei.android.client.customview:sliding-drawer:0.1.0'
+    compile 'com.github.ali-rezaei.android.client.customview:sliding-drawer:0.1.2'
 }
 ```
 
