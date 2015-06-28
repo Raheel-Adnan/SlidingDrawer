@@ -368,7 +368,7 @@ public class SlidingDrawer extends FrameLayout {
                             if (parent.getWidth() - tapCoordinate <= mOffsetDistance &&
                                     mSlideState == PanelState.CLOSE) {
                                 notifyActionAndAnimateForState(PanelState.OPEN, getWidth() - mOffsetDistance, true);
-                            } else if (tapCoordinate > getWidth() - mOffsetDistance &&
+                            } else if (parent.getWidth() - tapCoordinate > getWidth() - mOffsetDistance &&
                                     mSlideState == PanelState.OPEN) {
                                 notifyActionAndAnimateForState(PanelState.CLOSE, getWidth() - mOffsetDistance, true);
                             }
