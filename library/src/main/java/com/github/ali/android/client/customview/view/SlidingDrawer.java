@@ -302,6 +302,7 @@ public class SlidingDrawer extends FrameLayout {
                             layoutParams.bottomMargin = closeMargin;
                             layoutParams.topMargin = farMargin;
                         }
+                        mVelocity = mVelocityTracker.getYVelocity();
                         break;
                     case STICK_TO_LEFT:
                         if (farMargin > distance &&
@@ -309,6 +310,7 @@ public class SlidingDrawer extends FrameLayout {
                             layoutParams.leftMargin = closeMargin;
                             layoutParams.rightMargin = farMargin;
                         }
+                        mVelocity = mVelocityTracker.getXVelocity();
                         break;
                     case STICK_TO_RIGHT:
                         if (farMargin > distance &&
@@ -316,6 +318,7 @@ public class SlidingDrawer extends FrameLayout {
                             layoutParams.rightMargin = closeMargin;
                             layoutParams.leftMargin = farMargin;
                         }
+                        mVelocity = mVelocityTracker.getXVelocity();
                         break;
                     case STICK_TO_TOP:
                         if (farMargin > distance &&
@@ -323,6 +326,7 @@ public class SlidingDrawer extends FrameLayout {
                             layoutParams.topMargin = closeMargin;
                             layoutParams.bottomMargin = farMargin;
                         }
+                        mVelocity = mVelocityTracker.getYVelocity();
                         break;
                 }
                 setLayoutParams(layoutParams);
@@ -347,7 +351,6 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-                        mVelocity = mVelocityTracker.getYVelocity();
                         break;
 
                     case STICK_TO_TOP:
@@ -363,7 +366,6 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-                        mVelocity = mVelocityTracker.getYVelocity();
                         break;
 
                     case STICK_TO_LEFT:
@@ -378,7 +380,6 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-                        mVelocity = mVelocityTracker.getXVelocity();
                         break;
 
                     case STICK_TO_RIGHT:
@@ -393,7 +394,6 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-                        mVelocity = mVelocityTracker.getXVelocity();
                         break;
                 }
                 if (DEBUG) Log.d(TAG, "Velocity:" + mVelocity);
