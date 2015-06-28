@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.DecelerateInterpolator;
@@ -70,6 +71,10 @@ public class SlidingDrawer extends FrameLayout {
 
     private static final PanelState DEFAULT_SLIDE_STATE = PanelState.CLOSE;
 
+    private static final int VELOCITY_UNIT = 1000;
+
+    private static final float MAX_VELOCITY = .5f * VELOCITY_UNIT;
+
     /* Positions of the last motion event */
     private float mInitialCoordinate;
 
@@ -104,6 +109,9 @@ public class SlidingDrawer extends FrameLayout {
     private PanelState mSlideState = DEFAULT_SLIDE_STATE;
 
     private OnInteractListener mOnInteractListener;
+
+    private VelocityTracker mVelocityTracker = null;
+    private float mVelocity;
 
     public SlidingDrawer(Context context) {
         this(context, null);
@@ -267,9 +275,19 @@ public class SlidingDrawer extends FrameLayout {
                 _lastCoordinate = coordinate;
                 _pressStartTime = System.currentTimeMillis();
 
+                if (mVelocityTracker == null) {
+                    mVelocityTracker = VelocityTracker.obtain();
+                } else {
+                    mVelocityTracker.clear();
+                }
+                mVelocityTracker.addMovement(event);
+
                 break;
 
             case MotionEvent.ACTION_MOVE:
+
+                mVelocityTracker.addMovement(event);
+                mVelocityTracker.computeCurrentVelocity(VELOCITY_UNIT);
 
                 RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
                         getLayoutParams();
@@ -329,7 +347,7 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-
+                        mVelocity = mVelocityTracker.getYVelocity();
                         break;
 
                     case STICK_TO_TOP:
@@ -345,7 +363,7 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-
+                        mVelocity = mVelocityTracker.getYVelocity();
                         break;
 
                     case STICK_TO_LEFT:
@@ -360,7 +378,7 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-
+                        mVelocity = mVelocityTracker.getXVelocity();
                         break;
 
                     case STICK_TO_RIGHT:
@@ -375,9 +393,12 @@ public class SlidingDrawer extends FrameLayout {
                         } else {
                             smoothScrollToAndNotify(diff);
                         }
-
+                        mVelocity = mVelocityTracker.getXVelocity();
                         break;
                 }
+                if (DEBUG) Log.d(TAG, "Velocity:" + mVelocity);
+                mVelocityTracker.recycle();
+                mVelocityTracker = null;
                 break;
         }
         return true;
@@ -389,7 +410,7 @@ public class SlidingDrawer extends FrameLayout {
 
         PanelState stateToApply;
         if (diff > 0) {
-            if (diff > length / 2.5) {
+            if (diff > length / 2.5 || Math.abs(mVelocity) > MAX_VELOCITY) {
                 stateToApply = PanelState.CLOSE;
                 notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
             } else if (mSlideState == PanelState.OPEN) {
@@ -397,7 +418,7 @@ public class SlidingDrawer extends FrameLayout {
                 notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), false);
             }
         } else {
-            if (Math.abs(diff) > length / 2.5) {
+            if (Math.abs(diff) > length / 2.5 || Math.abs(mVelocity) > MAX_VELOCITY) {
                 stateToApply = PanelState.OPEN;
                 notifyActionAndAnimateForState(stateToApply, getTranslationFor(stateToApply), true);
             } else if (mSlideState == PanelState.CLOSE) {
